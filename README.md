@@ -5,7 +5,7 @@ This is the repository of code for my work on my literature review - <b>Classifi
 ### The Virtual Environment
 
 Launching the environment:
-`source myenv/bin/activate`
+`source .venv/bin/activate`
 
 Exiting the environment:
 `deactivate`
