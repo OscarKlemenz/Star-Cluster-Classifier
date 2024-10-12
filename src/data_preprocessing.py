@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from astropy.io import fits
 from astropy.visualization import ZScaleInterval
 from PIL import Image
@@ -49,16 +50,56 @@ def fits_to_png(fits_file, output_png, image_size):
     # Save the image as PNG
     img.save(output_png)
 
-fits_to_png("./data/test_images/cluster_0003_B.fits", 
-            "./data/test_images/cluster_0003_B_64_ZScale.png",
-            conf.IMAGE_SIZE)
+def collect_samples_by_mv(csv_filename):
+    """Gets the negative and positive sample names from a csv file
+    based upon their M_V values
+
+    Args:
+        csv_filename (str): Name of the csv to extract the names
+    Returns:
+        str[], str[]: List of ids for both positive and negative samples
+    """
+    df = pd.read_csv(csv_filename)
+
+    negative_ids = []
+    positive_ids = []
+
+    for _, row in df.iterrows():
+        
+        if row['M_V'] > conf.NEGATIVE_END:
+            negative_ids.append(str(row['ID']).zfill(5))
+        elif row['M_V'] < conf.POSITIVE_START:
+            positive_ids.append(str(row['ID']).zfill(5))
+    
+    return positive_ids, negative_ids
+
+def generate_filenames(ids):
+    """ Adds the correct filename format onto collected ids
+
+    Args:
+        ids (str[]): List of ids
+
+    Returns:
+        str[]: List of filenames
+    """
+
+    for i in range(0, len(ids)):
+        ids[i] = conf.SYNTH_START + ids[i] + conf.SYNTH_END
+    
+    return ids
+        
+pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
+pos = generate_filenames(pos)
+neg = generate_filenames(neg)
+print(pos)
 
 
-# Read from a csv
+# For each one that is read, find the .fits file and convert it
+# to the decided size
 
-# Function to read a csv, read up until the end magnitude for
-# negatives
-# Move to the start of the positives and read all of them
+# fits_to_png("./data/test_images/cluster_0003_B.fits", 
+#             "./data/test_images/cluster_0003_B_64_ZScale.png",
+#             conf.IMAGE_SIZE)
 
 # For each one that is read, find the .fits file and convert it
 # to the decided size
