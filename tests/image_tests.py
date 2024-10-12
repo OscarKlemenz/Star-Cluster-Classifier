@@ -16,7 +16,7 @@ def fits_to_png(fitsFile, outputPng, targetSize=(64, 64)):
 
     imageData = hdul[0].data
     hdul.close()
-
+    # AsinH and zscale is actually what we want
     imageData = np.log10(imageData + 1e-3)
     
     imageData -= np.min(imageData)  # Shift data to positive range
