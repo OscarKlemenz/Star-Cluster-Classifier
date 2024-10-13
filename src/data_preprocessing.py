@@ -4,8 +4,10 @@ from astropy.io import fits
 from astropy.visualization import ZScaleInterval
 from PIL import Image
 import config as conf
+import shutil
+import os
 
-def fits_to_png(fits_file, output_png, image_size):
+def fits_to_png(fits_file, output_png, image_size=(64, 64)):
     """
     Convert a FITS file to PNG and resize it to a specific target size.
     
@@ -50,6 +52,26 @@ def fits_to_png(fits_file, output_png, image_size):
     # Save the image as PNG
     img.save(output_png)
 
+def convert_fits_from_directory(source_folder, output_folder, image_size=(64, 64)):
+    """
+    Convert all FITS files in the specified directory to PNG and save them in the output folder.
+    
+    Parameters:
+    - source_folder: Directory containing the input FITS files.
+    - output_folder: Folder where the PNG files will be saved.
+    - image_size: Tuple representing the desired image size, e.g., (64, 64).
+    """
+    # Ensure the output folder exists
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    # Iterate over each file in the source directory
+    for filename in os.listdir(source_folder):
+        if filename.endswith('.fits'):
+            fits_file = os.path.join(source_folder, filename)
+            output_png = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.png")
+            fits_to_png(fits_file, output_png, image_size)
+
 def collect_samples_by_mv(csv_filename):
     """Gets the negative and positive sample names from a csv file
     based upon their M_V values
@@ -67,9 +89,9 @@ def collect_samples_by_mv(csv_filename):
     for _, row in df.iterrows():
         
         if row['M_V'] > conf.NEGATIVE_END:
-            negative_ids.append(str(row['ID']).zfill(5))
+            negative_ids.append(str(row['ID']).zfill(4))
         elif row['M_V'] < conf.POSITIVE_START:
-            positive_ids.append(str(row['ID']).zfill(5))
+            positive_ids.append(str(row['ID']).zfill(4))
     
     return positive_ids, negative_ids
 
@@ -87,19 +109,56 @@ def generate_filenames(ids):
         ids[i] = conf.SYNTH_START + ids[i] + conf.SYNTH_END
     
     return ids
-        
-pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
-pos = generate_filenames(pos)
-neg = generate_filenames(neg)
-print(pos)
+
+def place_data_in_new_folder(source_folder, dest_folder, filenames):
+    """ Moves files from one folder to another
+
+    Args:
+        source_folder (str): Folder the files are coming from
+        dest_folder (str): Folder the files are arriving in
+        filenames (str[]): List of filenames ot move
+    """
+    
+    if not os.path.exists(source_folder):
+        print(f"Source folder '{source_folder}' does not exist.")
+        return
+
+    if not os.path.exists(dest_folder):
+        # Create the destination folder if it doesn't exist
+        os.makedirs(dest_folder)
+
+    # Loop through all files in the source folder
+    for filename in os.listdir(source_folder):
+        if filename in filenames:
+            # Get the full file path
+            full_file_name = os.path.join(source_folder, filename)
+            
+            # Check if it's a file (not a subdirectory)
+            if os.path.isfile(full_file_name):
+                # Copy the file to the destination folder
+                shutil.copy(full_file_name, dest_folder)
+                print(f"Copied: {filename}")
+    
+    print("File copying completed.")
 
 
-# For each one that is read, find the .fits file and convert it
-# to the decided size
+if __name__ == "__main__":
+    
+    # # Get positive and negative samples
+    # pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
+    # # Create filenames
+    # pos = generate_filenames(pos)
+    # neg = generate_filenames(neg)
+    # # Create new folders
+    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
+    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
+    # Convert the files to images
+    convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
+    convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
+
+    # Next perform data augmentation
+    
 
 # fits_to_png("./data/test_images/cluster_0003_B.fits", 
 #             "./data/test_images/cluster_0003_B_64_ZScale.png",
 #             conf.IMAGE_SIZE)
-
-# For each one that is read, find the .fits file and convert it
-# to the decided size

@@ -16,6 +16,9 @@ POSITIVE_START = -5
 # Filenames
 SYNTH_START = 'cluster_'
 SYNTH_END = '_B.fits'
+SYNTH_SOURCE = './data/synthetic_clusters'
+SYNTH_DEST_POS = './data/synthetic_positive'
+SYNTH_DEST_NEG = './data/synthetic_negative'
 
 
 # Training hyperparameters
