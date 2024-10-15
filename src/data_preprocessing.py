@@ -3,6 +3,7 @@ import pandas as pd
 from astropy.io import fits
 from astropy.visualization import ZScaleInterval
 from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 import config as conf
 import shutil
 import os
@@ -141,6 +142,49 @@ def place_data_in_new_folder(source_folder, dest_folder, filenames):
     
     print("File copying completed.")
 
+def data_augmentation(original_images_dir, augmented_images_dir):
+    """ Applies data augmentation to a directory of images
+
+    Args:
+        original_images_dir (str): Source of the images
+        augmented_images_dir (str): Destination for the new augmented images
+    """
+
+    # Create an ImageDataGenerator with both horizontal and vertical shifts
+    datagen = ImageDataGenerator(
+        width_shift_range=0.1,    # Horizontal shift (10% of the image width)
+        height_shift_range=0.1,   # Vertical shift (10% of the image height)
+        # rotation_range=15,        # Rotate images by up to 15 degrees
+        zoom_range=0.1,           # Random zoom in/out by 10%
+        horizontal_flip=True,     # Randomly flip images horizontally
+        vertical_flip=False  ,     # Optionally flip images vertically (False here, but can be True)
+        fill_mode='wrap'       # Shift without stretching the image
+    )
+
+    # Create the output directory if it doesn't exist
+    if not os.path.exists(augmented_images_dir):
+        os.makedirs(augmented_images_dir)
+
+    # Load and augment images
+    for filename in os.listdir(original_images_dir):
+        if filename.endswith('.jpg') or filename.endswith('.png'):  # Adjust to your image formats
+            img_path = os.path.join(original_images_dir, filename)
+            
+            # Load the image
+            img = load_img(img_path)
+            img_array = img_to_array(img)  # Convert to numpy array
+            img_array = img_array.reshape((1,) + img_array.shape)  # Reshape for the generator
+            
+            # Get the base filename (without extension) for saving augmented images
+            base_filename = os.path.splitext(filename)[0]  # Removes the file extension
+            
+            # Augment the image and save the outputs with original name as part of the filename
+            i = 0
+            for batch in datagen.flow(img_array, batch_size=1, save_prefix=f'{base_filename}_aug', 
+                                    save_format='png', save_to_dir=augmented_images_dir):
+                i += 1
+                if i >= 10:  # Save 10 augmented images per original image
+                    break
 
 if __name__ == "__main__":
     
@@ -153,8 +197,9 @@ if __name__ == "__main__":
     # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
     # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
     # Convert the files to images
-    convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
-    convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
+    # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
+    # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
+    data_augmentation('./data/synthetic_negative_png', './data/synthetic_negative_png_aug')
 
     # Next perform data augmentation
     
