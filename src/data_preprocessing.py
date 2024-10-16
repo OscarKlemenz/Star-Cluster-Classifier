@@ -150,6 +150,9 @@ def data_augmentation(original_images_dir, augmented_images_dir):
         augmented_images_dir (str): Destination for the new augmented images
     """
 
+    # NEED TO FIX GRAYSCALE CONVERSION AS IT IS CURRENTLY NOT WORKING
+
+
     # Background grey value
     background_grey_value = 94  # Set to the most common pixel value
 
