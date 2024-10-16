@@ -150,15 +150,18 @@ def data_augmentation(original_images_dir, augmented_images_dir):
         augmented_images_dir (str): Destination for the new augmented images
     """
 
+    # Background grey value
+    background_grey_value = 94  # Set to the most common pixel value
+
     # Create an ImageDataGenerator with both horizontal and vertical shifts
     datagen = ImageDataGenerator(
         width_shift_range=0.1,    # Horizontal shift (10% of the image width)
         height_shift_range=0.1,   # Vertical shift (10% of the image height)
-        # rotation_range=15,        # Rotate images by up to 15 degrees
+        rotation_range=15,        # Rotate images by up to 15 degrees
         zoom_range=0.1,           # Random zoom in/out by 10%
         horizontal_flip=True,     # Randomly flip images horizontally
-        vertical_flip=False  ,     # Optionally flip images vertically (False here, but can be True)
-        fill_mode='wrap'       # Shift without stretching the image
+        vertical_flip=False,      # Optionally flip images vertically
+        fill_mode='wrap'          # Shift without stretching the image
     )
 
     # Create the output directory if it doesn't exist
@@ -170,8 +173,8 @@ def data_augmentation(original_images_dir, augmented_images_dir):
         if filename.endswith('.jpg') or filename.endswith('.png'):  # Adjust to your image formats
             img_path = os.path.join(original_images_dir, filename)
             
-            # Load the image
-            img = load_img(img_path)
+            # Load the image in grayscale
+            img = load_img(img_path, color_mode='grayscale')  # Load as grayscale
             img_array = img_to_array(img)  # Convert to numpy array
             img_array = img_array.reshape((1,) + img_array.shape)  # Reshape for the generator
             
@@ -182,6 +185,17 @@ def data_augmentation(original_images_dir, augmented_images_dir):
             i = 0
             for batch in datagen.flow(img_array, batch_size=1, save_prefix=f'{base_filename}_aug', 
                                     save_format='png', save_to_dir=augmented_images_dir):
+                
+                # Convert the batch (augmented image) to array for post-processing
+                aug_img = batch[0].astype(np.uint8)
+
+                # Replace black pixels (0) with the background grey value (94)
+                aug_img[aug_img == 0] = background_grey_value
+
+                # Convert back to an image and save in grayscale mode
+                result_img = Image.fromarray(aug_img.squeeze(), mode='L')  # 'L' mode for grayscale
+                result_img.save(f'{augmented_images_dir}/{base_filename}_aug_{i}.png')
+                
                 i += 1
                 if i >= 10:  # Save 10 augmented images per original image
                     break
