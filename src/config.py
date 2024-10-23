@@ -20,6 +20,10 @@ SYNTH_SOURCE = './data/synthetic_clusters'
 SYNTH_DEST_POS = './data/synthetic_positive'
 SYNTH_DEST_NEG = './data/synthetic_negative'
 
+# Preprocessing variables
+train_ratio=0.7
+test_ratio=0.15
+val_ratio=0.15
 
 # Training hyperparameters
 LEARNING_RATE = 0.0001

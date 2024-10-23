@@ -5,6 +5,7 @@ from astropy.visualization import ZScaleInterval
 from PIL import Image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 import config as conf
+import random
 import shutil
 import os
 
@@ -143,23 +144,20 @@ def place_data_in_new_folder(source_folder, dest_folder, filenames):
     print("File copying completed.")
 
 def data_augmentation(original_images_dir, augmented_images_dir):
-    """ Applies data augmentation to a directory of images
+    """Applies data augmentation to a directory of images
 
     Args:
         original_images_dir (str): Source of the images
         augmented_images_dir (str): Destination for the new augmented images
     """
 
-    # NEED TO FIX GRAYSCALE CONVERSION AS IT IS CURRENTLY NOT WORKING
-
-
     # Background grey value
     background_grey_value = 94  # Set to the most common pixel value
-
-    # Create an ImageDataGenerator with both horizontal and vertical shifts
+    
+    # Augmentation properties
     datagen = ImageDataGenerator(
-        width_shift_range=0.1,    # Horizontal shift (10% of the image width)
-        height_shift_range=0.1,   # Vertical shift (10% of the image height)
+        width_shift_range=0.2,    # Horizontal shift (10% of the image width)
+        height_shift_range=0.2,   # Vertical shift (10% of the image height)
         rotation_range=15,        # Rotate images by up to 15 degrees
         zoom_range=0.1,           # Random zoom in/out by 10%
         horizontal_flip=True,     # Randomly flip images horizontally
@@ -173,9 +171,12 @@ def data_augmentation(original_images_dir, augmented_images_dir):
 
     # Load and augment images
     for filename in os.listdir(original_images_dir):
-        if filename.endswith('.jpg') or filename.endswith('.png'):  # Adjust to your image formats
+        if filename.endswith('.jpg') or filename.endswith('.png'):
             img_path = os.path.join(original_images_dir, filename)
             
+            # Save original to augmented folder
+            shutil.copy(img_path, os.path.join(augmented_images_dir, filename))
+
             # Load the image in grayscale
             img = load_img(img_path, color_mode='grayscale')  # Load as grayscale
             img_array = img_to_array(img)  # Convert to numpy array
@@ -183,11 +184,9 @@ def data_augmentation(original_images_dir, augmented_images_dir):
             
             # Get the base filename (without extension) for saving augmented images
             base_filename = os.path.splitext(filename)[0]  # Removes the file extension
-            
-            # Augment the image and save the outputs with original name as part of the filename
+            # Augment the image but do not save directly
             i = 0
-            for batch in datagen.flow(img_array, batch_size=1, save_prefix=f'{base_filename}_aug', 
-                                    save_format='png', save_to_dir=augmented_images_dir):
+            for batch in datagen.flow(img_array, batch_size=1):
                 
                 # Convert the batch (augmented image) to array for post-processing
                 aug_img = batch[0].astype(np.uint8)
@@ -200,8 +199,68 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                 result_img.save(f'{augmented_images_dir}/{base_filename}_aug_{i}.png')
                 
                 i += 1
-                if i >= 10:  # Save 10 augmented images per original image
+                if i >= 15:  # Save 10 augmented images per original image
                     break
+
+def split_data(source_dir, dest_dir):
+    """Splits images in the source directory into train, test, and validation sets based on given ratios.
+
+    Args:
+        source_dir (str): Directory containing the original images.
+        dest_dir (str): Directory to save the split datasets (train, test, validate).
+        train_ratio (float): Proportion of the dataset to be used for training.
+        test_ratio (float): Proportion of the dataset to be used for testing.
+        val_ratio (float): Proportion of the dataset to be used for validation.
+
+    The sum of `train_ratio`, `test_ratio`, and `val_ratio` should be 1.
+    """
+    # Ensure the ratios sum to 1
+    if conf.train_ratio + conf.test_ratio + conf.val_ratio != 1.0:
+        raise ValueError("Train, test, and validation ratios must sum to 1.")
+
+    # Create destination directories if they don't exist
+    train_dir = os.path.join(dest_dir, 'train')
+    test_dir = os.path.join(dest_dir, 'test')
+    val_dir = os.path.join(dest_dir, 'validate')
+
+    os.makedirs(train_dir, exist_ok=True)
+    os.makedirs(test_dir, exist_ok=True)
+    os.makedirs(val_dir, exist_ok=True)
+
+    # Get all files from the source directory
+    all_files = [f for f in os.listdir(source_dir) if f.endswith('.jpg') or f.endswith('.png')]
+
+    # Shuffle the files randomly
+    random.seed(42)  # For reproducibility
+    random.shuffle(all_files)
+
+    # Calculate the number of files for each split
+    total_files = len(all_files)
+    train_count = int(total_files * conf.train_ratio)
+    test_count = int(total_files * conf.test_ratio)
+    val_count = total_files - train_count - test_count  # Remaining files for validation
+
+    # Split the files
+    train_files = all_files[:train_count]
+    test_files = all_files[train_count:train_count + test_count]
+    val_files = all_files[train_count + test_count:]
+
+    # Function to copy files to their respective directories
+    def copy_files(file_list, target_dir):
+        for file_name in file_list:
+            src_path = os.path.join(source_dir, file_name)
+            dst_path = os.path.join(target_dir, file_name)
+            shutil.copy(src_path, dst_path)
+
+    # Copy the files into the train, test, and validate directories
+    copy_files(train_files, train_dir)
+    copy_files(test_files, test_dir)
+    copy_files(val_files, val_dir)
+
+    print(f"Data split into train, test, and validate sets.")
+    print(f"Training set: {len(train_files)} images")
+    print(f"Test set: {len(test_files)} images")
+    print(f"Validation set: {len(val_files)} images")
 
 if __name__ == "__main__":
     
@@ -216,7 +275,8 @@ if __name__ == "__main__":
     # Convert the files to images
     # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
     # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
-    data_augmentation('./data/synthetic_negative_png', './data/synthetic_negative_png_aug')
+    data_augmentation('./data/synthetic_positive_png', './data/synthetic_positive_png_aug')
+    # split_data('./data/synthetic_negative_png_aug', './data/training')
 
     # Next perform data augmentation
     
