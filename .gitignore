@@ -5,11 +5,12 @@ __pycache__/
 .DS_Store
 
 # Data folders to ignore
-data/synthetic_clusters
-data/synthetic_positive
-data/synthetic_negative
-data/synthetic_positive_png
-data/synthetic_positive_png_aug
-data/synthetic_negative_png
-data/synthetic_negative_png_aug
-data/training
+# data/synthetic_clusters
+# data/synthetic_positive
+# data/synthetic_negative
+# data/synthetic_positive_png
+# data/synthetic_positive_png_aug
+# data/synthetic_negative_png
+# data/synthetic_negative_png_aug
+# data/training
+data/*

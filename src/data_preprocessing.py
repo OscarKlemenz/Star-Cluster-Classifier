@@ -203,10 +203,11 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                     break
 
 def split_data(source_dir, dest_dir):
-    """Splits images in the source directory into train, test, and validation sets based on given ratios.
+    """Splits images in the source directory into train, test, and validation sets 
+    and organizes them into class subdirectories.
 
     Args:
-        source_dir (str): Directory containing the original images.
+        source_dir (str): Directory containing the original images (organized by class).
         dest_dir (str): Directory to save the split datasets (train, test, validate).
         train_ratio (float): Proportion of the dataset to be used for training.
         test_ratio (float): Proportion of the dataset to be used for testing.
@@ -215,7 +216,7 @@ def split_data(source_dir, dest_dir):
     The sum of `train_ratio`, `test_ratio`, and `val_ratio` should be 1.
     """
     # Ensure the ratios sum to 1
-    if conf.train_ratio + conf.test_ratio + conf.val_ratio != 1.0:
+    if conf.TRAIN_RATIO + conf.TEST_RATIO + conf.VAL_RATIO != 1.0:
         raise ValueError("Train, test, and validation ratios must sum to 1.")
 
     # Create destination directories if they don't exist
@@ -227,40 +228,52 @@ def split_data(source_dir, dest_dir):
     os.makedirs(test_dir, exist_ok=True)
     os.makedirs(val_dir, exist_ok=True)
 
-    # Get all files from the source directory
-    all_files = [f for f in os.listdir(source_dir) if f.endswith('.jpg') or f.endswith('.png')]
+    # Iterate over each class folder in the source directory
+    for class_name in os.listdir(source_dir):
+        class_dir = os.path.join(source_dir, class_name)
+        
+        if not os.path.isdir(class_dir):
+            continue  # Skip if it's not a directory
 
-    # Shuffle the files randomly
-    random.seed(42)  # For reproducibility
-    random.shuffle(all_files)
+        # Get all image files in the class directory
+        all_files = [f for f in os.listdir(class_dir) if f.endswith('.jpg') or f.endswith('.png')]
+        
+        # Shuffle the files randomly
+        random.seed(42)  # For reproducibility
+        random.shuffle(all_files)
 
-    # Calculate the number of files for each split
-    total_files = len(all_files)
-    train_count = int(total_files * conf.train_ratio)
-    test_count = int(total_files * conf.test_ratio)
-    val_count = total_files - train_count - test_count  # Remaining files for validation
+        # Calculate the number of files for each split
+        total_files = len(all_files)
+        train_count = int(total_files * conf.TRAIN_RATIO)
+        test_count = int(total_files * conf.TEST_RATIO)
+        val_count = total_files - train_count - test_count  # Remaining files for validation
 
-    # Split the files
-    train_files = all_files[:train_count]
-    test_files = all_files[train_count:train_count + test_count]
-    val_files = all_files[train_count + test_count:]
+        # Split the files into train, test, and validation sets
+        train_files = all_files[:train_count]
+        test_files = all_files[train_count:train_count + test_count]
+        val_files = all_files[train_count + test_count:]
 
-    # Function to copy files to their respective directories
-    def copy_files(file_list, target_dir):
-        for file_name in file_list:
-            src_path = os.path.join(source_dir, file_name)
-            dst_path = os.path.join(target_dir, file_name)
-            shutil.copy(src_path, dst_path)
+        # Function to copy files to their respective directories, maintaining class folders
+        def copy_files(file_list, target_dir):
+            class_target_dir = os.path.join(target_dir, class_name)  # Create class subfolder
+            os.makedirs(class_target_dir, exist_ok=True)  # Create class folder if it doesn't exist
 
-    # Copy the files into the train, test, and validate directories
-    copy_files(train_files, train_dir)
-    copy_files(test_files, test_dir)
-    copy_files(val_files, val_dir)
+            for file_name in file_list:
+                src_path = os.path.join(class_dir, file_name)
+                dst_path = os.path.join(class_target_dir, file_name)
+                shutil.copy(src_path, dst_path)
 
-    print(f"Data split into train, test, and validate sets.")
-    print(f"Training set: {len(train_files)} images")
-    print(f"Test set: {len(test_files)} images")
-    print(f"Validation set: {len(val_files)} images")
+        # Copy the files into the respective directories
+        copy_files(train_files, train_dir)
+        copy_files(test_files, test_dir)
+        copy_files(val_files, val_dir)
+
+        print(f"Class '{class_name}' split into train, test, and validate sets.")
+        print(f"  Training set: {len(train_files)} images")
+        print(f"  Test set: {len(test_files)} images")
+        print(f"  Validation set: {len(val_files)} images")
+
+    print("Data split complete.")
 
 if __name__ == "__main__":
     
@@ -275,10 +288,8 @@ if __name__ == "__main__":
     # Convert the files to images
     # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
     # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
-    data_augmentation('./data/synthetic_positive_png', './data/synthetic_positive_png_aug')
-    # split_data('./data/synthetic_negative_png_aug', './data/training')
-
-    # Next perform data augmentation
+    # data_augmentation('./data/synthetic_positive_png', './data/synthetic_positive_png_aug')
+    split_data('./data/pre-split_data', './data/dataset')
     
 
 # fits_to_png("./data/test_images/cluster_0003_B.fits", 
