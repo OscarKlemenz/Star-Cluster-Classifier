@@ -44,6 +44,8 @@ def create_model():
 
     model = models.Sequential()
 
+    model.add(layers.InputLayer(input_shape=(conf.IMAGE_SIZE, conf.IMAGE_SIZE, conf.IMAGE_CHANNELS)))
+
     # Example list of layers, COULD HAVE THIS IN CONFIGURATION
     layer_list = [
         layers.Conv2D(32, (3, 3), activation='relu'),  # Conv Layer 1
@@ -55,9 +57,7 @@ def create_model():
         layers.Dense(64, activation='relu')  # Fully Connected Layer
     ]
 
-    model.add(layers.InputLayer(input_shape=(32, 32, 3)))
-
-        # Add layers from the list
+    # Add layers from the list
     for layer in layer_list:
         model.add(layer)
     
@@ -70,3 +70,16 @@ def create_model():
                   metrics=['accuracy'])  # Metric to track
     
     return model
+
+if __name__ == "__main__":
+
+    train_data, validation_data = load_images()
+    model = create_model()
+
+    history = model.fit(
+        train_data,
+        epochs=conf.EPOCHS,
+        validation_data=validation_data
+    )
+
+    model.save("./models/MODEL_NAME.h5")
