@@ -27,9 +27,9 @@ VAL_RATIO=0.15
 
 # Dataset location
 TRAIN_DIR = './data/dataset/train'
-VALIDATION_DIR = './data/dataset/validation'
+VALIDATION_DIR = './data/dataset/validate'
 
 # Training hyperparameters
 LEARNING_RATE = 0.0001
 DROPOUT = 0.5
-EPOCHS = 30
+EPOCHS = 5

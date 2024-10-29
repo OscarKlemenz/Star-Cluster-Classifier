@@ -82,4 +82,4 @@ if __name__ == "__main__":
         validation_data=validation_data
     )
 
-    model.save("./models/MODEL_NAME.h5")
+    model.save("./models/TEST.h5")
