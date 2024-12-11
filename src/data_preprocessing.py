@@ -9,14 +9,14 @@ import random
 import shutil
 import os
 
-def fits_to_png(fits_file, output_png, image_size=(64, 64)):
+def fits_to_png(fits_file, output_png, image_size=64):
     """
     Convert a FITS file to PNG and resize it to a specific target size.
     
     Parameters:
     - fits_file: path to the input FITS file.
     - output_png: path to save the PNG file.
-    - target_size: tuple representing the desired image size, e.g., (64, 64).
+    - target_size: representing the desired image size, e.g., 64.
     """
     
     # Open the FITS file
@@ -289,7 +289,8 @@ if __name__ == "__main__":
     # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
     # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
     # data_augmentation('./data/synthetic_positive_png', './data/synthetic_positive_png_aug')
-    split_data('./data/pre-split_data', './data/dataset')
+    #split_data('./data/pre-split_data', './data/dataset')
+    fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 512)
     
 
 # fits_to_png("./data/test_images/cluster_0003_B.fits", 
