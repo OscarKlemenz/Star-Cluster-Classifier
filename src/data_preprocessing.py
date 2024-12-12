@@ -152,7 +152,7 @@ def data_augmentation(original_images_dir, augmented_images_dir):
     """
 
     # Background grey value
-    background_grey_value = 94  # Set to the most common pixel value
+    #background_grey_value = 94  # Set to the most common pixel value
     
     # Augmentation properties
     datagen = ImageDataGenerator(
@@ -192,7 +192,7 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                 aug_img = batch[0].astype(np.uint8)
 
                 # Replace black pixels (0) with the background grey value (94)
-                aug_img[aug_img == 0] = background_grey_value
+                #aug_img[aug_img == 0] = background_grey_value
 
                 # Convert back to an image and save in grayscale mode
                 result_img = Image.fromarray(aug_img.squeeze(), mode='L')  # 'L' mode for grayscale
@@ -278,21 +278,24 @@ def split_data(source_dir, dest_dir):
 if __name__ == "__main__":
     
     # # Get positive and negative samples
-    # pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
+    pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
     # # Create filenames
-    # pos = generate_filenames(pos)
-    # neg = generate_filenames(neg)
+    pos = generate_filenames(pos)
+    neg = generate_filenames(neg)
+    print('Located Cluster and Non-Cluster Files')
     # # Create new folders
-    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
-    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
+    place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
+    place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
+    print('Moved Files')
     # Convert the files to images
-    # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
-    # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
-    # data_augmentation('./data/synthetic_positive_png', './data/synthetic_positive_png_aug')
-    #split_data('./data/pre-split_data', './data/dataset')
-    fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 512)
-    
-
-# fits_to_png("./data/test_images/cluster_0003_B.fits", 
-#             "./data/test_images/cluster_0003_B_64_ZScale.png",
-#             conf.IMAGE_SIZE)
+    convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
+    convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
+    print('Converted Fits files to png')
+    # Augment the data
+    #data_augmentation('./data/synthetic_positive_png2', './data/pre-split_data2/cluster')
+    #data_augmentation('./data/synthetic_neagtive_png2', './data/pre-split_data2/non-cluster')
+    #print('Augmented Data')
+    # Split the data
+    #split_data('./data/pre-split_data2', './data/dataset2')
+    #print('Split Data')
+    # fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 128)
