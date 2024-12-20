@@ -14,3 +14,5 @@ __pycache__/
 # data/synthetic_negative_png_aug
 # data/training
 data/*
+finalised_cutouts
+cutouts
