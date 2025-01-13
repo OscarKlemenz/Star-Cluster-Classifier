@@ -119,18 +119,113 @@ def predict_images_in_directory(model, directory_path):
 
     return results
 
+def evaluate_model(model, test_directory):
+    """Evaluates the model on the test dataset and plots accuracy, loss, precision, recall, and F1-score.
+
+    Args:
+        model: The trained model to evaluate.
+        test_directory: Path to the directory containing test images.
+    """
+    # Load test data
+    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_data = test_datagen.flow_from_directory(
+        test_directory,
+        target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
+        color_mode='grayscale',
+        batch_size=32,
+        class_mode='categorical',
+        shuffle=False
+    )
+
+    # Evaluate the model
+    scores = model.evaluate(test_data)
+    print(f"Test Loss: {scores[0]}")
+    print(f"Test Accuracy: {scores[1]}")
+
+    # Predict the classes
+    y_pred = model.predict(test_data)
+    y_pred_classes = np.argmax(y_pred, axis=1)
+    y_true = test_data.classes
+
+    # Calculate precision, recall, and F1-score manually
+    precision = np.zeros(len(test_data.class_indices))
+    recall = np.zeros(len(test_data.class_indices))
+    f1_score = np.zeros(len(test_data.class_indices))
+
+    for i in range(len(test_data.class_indices)):
+        true_positives = np.sum((y_true == i) & (y_pred_classes == i))
+        false_positives = np.sum((y_true != i) & (y_pred_classes == i))
+        false_negatives = np.sum((y_true == i) & (y_pred_classes != i))
+
+        precision[i] = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
+        recall[i] = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
+        f1_score[i] = 2 * (precision[i] * recall[i]) / (precision[i] + recall[i]) if (precision[i] + recall[i]) > 0 else 0
+
+    # Print precision, recall, and F1-score
+    for i, class_name in enumerate(test_data.class_indices.keys()):
+        print(f"Class: {class_name}")
+        print(f"Precision: {precision[i]}")
+        print(f"Recall: {recall[i]}")
+        print(f"F1-score: {f1_score[i]}")
+        print()
+
+    # Plot confusion matrix
+    conf_matrix = np.zeros((len(test_data.class_indices), len(test_data.class_indices)), dtype=int)
+    for true, pred in zip(y_true, y_pred_classes):
+        conf_matrix[true, pred] += 1
+
+    plt.figure(figsize=(10, 7))
+    plt.imshow(conf_matrix, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('Confusion Matrix')
+    plt.colorbar()
+    tick_marks = np.arange(len(test_data.class_indices))
+    plt.xticks(tick_marks, test_data.class_indices.keys(), rotation=45)
+    plt.yticks(tick_marks, test_data.class_indices.keys())
+
+    for i in range(len(test_data.class_indices)):
+        for j in range(len(test_data.class_indices)):
+            plt.text(j, i, conf_matrix[i, j], horizontalalignment="center", color="white" if conf_matrix[i, j] > conf_matrix.max() / 2 else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
+
+    # Plot accuracy and loss
+    history = model.history.history
+    plt.figure(figsize=(12, 4))
+    plt.subplot(1, 2, 1)
+    plt.plot(history['accuracy'], label='Train Accuracy')
+    plt.plot(history['val_accuracy'], label='Validation Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.title('Model Accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(history['loss'], label='Train Loss')
+    plt.plot(history['val_loss'], label='Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Model Loss')
+
+    plt.show()
+
 if __name__ == "__main__":
     # Load the trained model
-    model = tf.keras.models.load_model("./models/TEST.h5")
+    model = tf.keras.models.load_model("./models/ALL_REAL_NO_CLEANING.h5")
 
     # Directory containing test images
-    test_directory = "./data/dataset/test"  # Replace with your test images directory
+    test_directory = "./data/real_dataset/test"  # Replace with your test images directory
 
-    # Make predictions on all images in the test directory
+    # Evaluate the model
+    evaluate_model(model, test_directory)
+
+    # # Make predictions on all images in the test directory
     # predictions = predict_images_in_directory(model, test_directory)
 
     # # Display the results
     # for result in predictions:
     #      print(f"File: {result['filename']}, Predicted Class: {result['predicted_class']}, Probability: {result['probability']:.2f}")
 
-    print(predict_image(model, "./data/dataset/test/non-cluster/cluster_0001_B_aug_11.png"))
+    #print(predict_image(model, "./data/dataset/test/non-cluster/cluster_0001_B_aug_11.png"))

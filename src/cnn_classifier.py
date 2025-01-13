@@ -82,4 +82,4 @@ if __name__ == "__main__":
         validation_data=validation_data
     )
 
-    model.save("./models/TEST.h5")
+    model.save("./models/ALL_REAL_NO_CLEANING.h5")

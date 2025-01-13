@@ -199,7 +199,7 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                 result_img.save(f'{augmented_images_dir}/{base_filename}_aug_{i}.png')
                 
                 i += 1
-                if i >= 15:  # Save 10 augmented images per original image
+                if i >= 15:  # Specifies the amount of augmentation per image
                     break
 
 def split_data(source_dir, dest_dir):
@@ -278,24 +278,24 @@ def split_data(source_dir, dest_dir):
 if __name__ == "__main__":
     
     # # Get positive and negative samples
-    pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
-    # # Create filenames
-    pos = generate_filenames(pos)
-    neg = generate_filenames(neg)
-    print('Located Cluster and Non-Cluster Files')
-    # # Create new folders
-    place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
-    place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
-    print('Moved Files')
-    # Convert the files to images
-    convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
-    convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
-    print('Converted Fits files to png')
+    # pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
+    # # # Create filenames
+    # pos = generate_filenames(pos)
+    # neg = generate_filenames(neg)
+    # print('Located Cluster and Non-Cluster Files')
+    # # # Create new folders
+    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
+    # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
+    # print('Moved Files')
+    # # Convert the files to images
+    # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
+    # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
+    # print('Converted Fits files to png')
     # Augment the data
-    #data_augmentation('./data/synthetic_positive_png2', './data/pre-split_data2/cluster')
-    #data_augmentation('./data/synthetic_neagtive_png2', './data/pre-split_data2/non-cluster')
+    # data_augmentation('./data/real_all_pre-split_dataset/cluster', './data/real_all_pre-split_dataset/aug_cluster')
+    # data_augmentation('./data/real_all_pre-split_dataset/non-cluster', './data/real_all_pre-split_dataset/aug_non-cluster')
     #print('Augmented Data')
     # Split the data
-    #split_data('./data/pre-split_data2', './data/dataset2')
-    #print('Split Data')
+    split_data('./data/real_all_pre-split_dataset', './data/real_dataset')
+    print('Split Data')
     # fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 128)
