@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import config as conf
 import os
+import json
 
 def visualize_feature_maps(model, image_path):
     """ Checks the feature map when inputting one image (must be 64x64 and grayscale)
@@ -213,10 +214,10 @@ def evaluate_model(model, test_directory):
 
 if __name__ == "__main__":
     # Load the trained model
-    model = tf.keras.models.load_model("./models/ALL_REAL_NO_CLEANING.h5")
+    model = tf.keras.models.load_model("./models/REAL_SYNTH_NO_CLEANING.h5")
 
     # Directory containing test images
-    test_directory = "./data/real_dataset/test"  # Replace with your test images directory
+    test_directory = "./data/dataset/test"  # Replace with your test images directory
 
     # Evaluate the model
     evaluate_model(model, test_directory)

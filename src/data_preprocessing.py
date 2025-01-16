@@ -199,7 +199,7 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                 result_img.save(f'{augmented_images_dir}/{base_filename}_aug_{i}.png')
                 
                 i += 1
-                if i >= 15:  # Specifies the amount of augmentation per image
+                if i >= 20:  # Specifies the amount of augmentation per image
                     break
 
 def split_data(source_dir, dest_dir):
@@ -275,6 +275,25 @@ def split_data(source_dir, dest_dir):
 
     print("Data split complete.")
 
+def resize_images_in_folder(source_folder, target_folder, target_size=(64, 64)):
+    """Resizes all images in the source folder to the target size and saves them in the target folder.
+
+    Args:
+        source_folder (str): Path to the folder containing the original images.
+        target_folder (str): Path to the folder to save the resized images.
+        target_size (tuple): Desired image size, e.g., (64, 64).
+    """
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+
+    for filename in os.listdir(source_folder):
+        if filename.endswith('.jpg') or filename.endswith('.png'):
+            img_path = os.path.join(source_folder, filename)
+            img = Image.open(img_path)
+            img_resized = img.resize(target_size, Image.LANCZOS)
+            img_resized.save(os.path.join(target_folder, filename))
+            print(f"Resized and saved {filename}")
+
 if __name__ == "__main__":
     
     # # Get positive and negative samples
@@ -291,11 +310,14 @@ if __name__ == "__main__":
     # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
     # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
     # print('Converted Fits files to png')
+    # Resize the images
+    # resize_images_in_folder("./data/real_nonclean_negative", "./data/real_nonclean_positive_resized")
+    # resize_images_in_folder("./data/real_nonclean_positive", "./data/real_nonclean_negative_resized")
     # Augment the data
-    # data_augmentation('./data/real_all_pre-split_dataset/cluster', './data/real_all_pre-split_dataset/aug_cluster')
+    # data_augmentation('./data/pre-split_data_SR/non-cluster', './data/pre-split_data_SR/aug_non-cluster')
     # data_augmentation('./data/real_all_pre-split_dataset/non-cluster', './data/real_all_pre-split_dataset/aug_non-cluster')
     #print('Augmented Data')
     # Split the data
-    split_data('./data/real_all_pre-split_dataset', './data/real_dataset')
-    print('Split Data')
+    split_data('./data/pre-split_data_SR', './data/dataset')
+    # print('Split Data')
     # fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 128)
