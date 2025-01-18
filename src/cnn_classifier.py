@@ -20,7 +20,7 @@ def load_images():
         conf.TRAIN_DIR,
         target_size=(64, 64),
         color_mode='grayscale',
-        batch_size=32,  # Number of images per batch
+        batch_size=32,
         class_mode='categorical'
     )
 
@@ -46,15 +46,15 @@ def create_model():
 
     model.add(layers.InputLayer(input_shape=(conf.IMAGE_SIZE, conf.IMAGE_SIZE, conf.IMAGE_CHANNELS)))
 
-    # Example list of layers, COULD HAVE THIS IN CONFIGURATION
+    # Model architecture
     layer_list = [
         layers.Conv2D(32, (3, 3), activation='relu'),  # Conv Layer 1
         layers.MaxPooling2D((2, 2)),  # Max Pooling 1
         layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 2
         layers.MaxPooling2D((2, 2)),  # Max Pooling 2
         layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 3
-        layers.Flatten(),  # Flatten for Dense Layers
-        layers.Dense(64, activation='relu')  # Fully Connected Layer
+        layers.Flatten(),
+        layers.Dense(64, activation='relu')
     ]
 
     # Add layers from the list
@@ -62,12 +62,12 @@ def create_model():
         model.add(layer)
     
     # Add output layer for classification
-    model.add(layers.Dense(2, activation='softmax'))  # Final layer
+    model.add(layers.Dense(2, activation='softmax'))
     
     # Compile the model
-    model.compile(optimizer='adam',  # Optimizer
-                  loss='categorical_crossentropy',  # Loss function for classification
-                  metrics=['accuracy'])  # Metric to track
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
     
     return model
 
