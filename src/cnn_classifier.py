@@ -18,7 +18,7 @@ def load_images():
     # Load images from the directories
     train = train_datagen.flow_from_directory(
         conf.TRAIN_DIR,
-        target_size=(64, 64),
+        target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
         color_mode='grayscale',
         batch_size=32,
         class_mode='categorical'
@@ -26,7 +26,7 @@ def load_images():
 
     validate = validation_datagen.flow_from_directory(
         conf.VALIDATION_DIR,
-        target_size=(64, 64),
+        target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
         color_mode='grayscale', 
         batch_size=32,
         class_mode='categorical'
@@ -82,4 +82,4 @@ if __name__ == "__main__":
         validation_data=validation_data
     )
 
-    model.save("./models/ALL_REAL_NO_CLEANING.h5")
+    model.save("./models/128SRNC.h5")

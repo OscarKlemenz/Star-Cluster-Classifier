@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import config as conf
 import os
 import json
+import shutil
 
 def visualize_feature_maps(model, image_path):
     """ Checks the feature map when inputting one image (must be 64x64 and grayscale)
@@ -14,7 +15,7 @@ def visualize_feature_maps(model, image_path):
         model: Trained model
         image_path: Path to the image file to test on
     """
-    
+
     # Compile the model if it wasn't compiled after loading
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -212,16 +213,55 @@ def evaluate_model(model, test_directory):
 
     plt.show()
 
+def classify_and_organize_images(model, source_directory, output_directory):
+    """Classifies images in the source directory and organizes them into 'cluster' and 'non-cluster' folders.
+
+    Args:
+        model: The trained model to make predictions with.
+        source_directory: Path to the directory containing images to classify.
+        output_directory: Path to the directory where classified images will be saved.
+    """
+    # Create output directories if they don't exist
+    cluster_dir = os.path.join(output_directory, 'cluster')
+    non_cluster_dir = os.path.join(output_directory, 'non-cluster')
+    os.makedirs(cluster_dir, exist_ok=True)
+    os.makedirs(non_cluster_dir, exist_ok=True)
+
+    # Iterate over each file in the source directory
+    for filename in os.listdir(source_directory):
+        file_path = os.path.join(source_directory, filename)
+
+        # Check if the file is an image
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+            # Load and preprocess the image
+            img_array = load_and_preprocess_image(file_path, target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE))
+
+            # Make predictions
+            predictions = model.predict(img_array)
+            predicted_class = np.argmax(predictions, axis=1)[0]  # Get predicted class index
+
+            # Determine the target directory based on the predicted class
+            target_dir = cluster_dir if predicted_class == 0 else non_cluster_dir
+
+            # Copy the image to the target directory
+            shutil.copy(file_path, target_dir)
+
+
 if __name__ == "__main__":
     # Load the trained model
-    model = tf.keras.models.load_model("./models/REAL_SYNTH_NO_CLEANING.h5")
+    model = tf.keras.models.load_model("./models/128SRNC.h5")
 
-    # Directory containing test images
-    test_directory = "./data/dataset/test"  # Replace with your test images directory
+    # Directory containing images to classify
+    source_directory = "./data/Yilun_Wang_Cutouts"  # Replace with your source images directory
 
-    # Evaluate the model
-    evaluate_model(model, test_directory)
+    # Directory to save classified images
+    output_directory = "./data/predictions_128SRNC"
 
+    # Test the models accuracy
+    # evaluate_model(model, "./data/dataset_128/test")
+
+    # Classify and organize images
+    classify_and_organize_images(model, source_directory, output_directory)
     # # Make predictions on all images in the test directory
     # predictions = predict_images_in_directory(model, test_directory)
 

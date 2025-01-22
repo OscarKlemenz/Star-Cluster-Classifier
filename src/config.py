@@ -4,7 +4,7 @@ Centralised location for model, training and dataset parameters
 
 # Data configurations
 DATA_DIR = './data/'
-IMAGE_SIZE = 64
+IMAGE_SIZE = 128
 IMAGE_CHANNELS = 1
 
 # CSV Processing
@@ -17,8 +17,8 @@ POSITIVE_START = -5
 SYNTH_START = 'cluster_'
 SYNTH_END = '_B.fits'
 SYNTH_SOURCE = './data/synthetic_clusters'
-SYNTH_DEST_POS = './data/synthetic_positive'
-SYNTH_DEST_NEG = './data/synthetic_negative'
+SYNTH_DEST_POS = './data/synthetic_positive_128'
+SYNTH_DEST_NEG = './data/synthetic_negative_128'
 
 # Preprocessing variables
 TRAIN_RATIO=0.7

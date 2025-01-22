@@ -143,7 +143,7 @@ def place_data_in_new_folder(source_folder, dest_folder, filenames):
     
     print("File copying completed.")
 
-def data_augmentation(original_images_dir, augmented_images_dir):
+def data_augmentation(original_images_dir, augmented_images_dir, no_of_augmentations=2):
     """Applies data augmentation to a directory of images
 
     Args:
@@ -199,7 +199,7 @@ def data_augmentation(original_images_dir, augmented_images_dir):
                 result_img.save(f'{augmented_images_dir}/{base_filename}_aug_{i}.png')
                 
                 i += 1
-                if i >= 20:  # Specifies the amount of augmentation per image
+                if i >= no_of_augmentations:  # Specifies the amount of augmentation per image
                     break
 
 def split_data(source_dir, dest_dir):
@@ -298,26 +298,26 @@ if __name__ == "__main__":
     
     # # Get positive and negative samples
     # pos, neg = collect_samples_by_mv('./data/csv/synthetic_clusters_ordby_M_V.csv')
-    # # # Create filenames
+    # # # # Create filenames
     # pos = generate_filenames(pos)
     # neg = generate_filenames(neg)
     # print('Located Cluster and Non-Cluster Files')
-    # # # Create new folders
+    # # Create new folders
     # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_POS, pos)
     # place_data_in_new_folder(conf.SYNTH_SOURCE, conf.SYNTH_DEST_NEG, neg)
     # print('Moved Files')
-    # # Convert the files to images
+    # # # Convert the files to images
     # convert_fits_from_directory(conf.SYNTH_DEST_POS , conf.SYNTH_DEST_POS + '_png', conf.IMAGE_SIZE)
     # convert_fits_from_directory(conf.SYNTH_DEST_NEG , conf.SYNTH_DEST_NEG + '_png', conf.IMAGE_SIZE)
     # print('Converted Fits files to png')
     # Resize the images
     # resize_images_in_folder("./data/real_nonclean_negative", "./data/real_nonclean_positive_resized")
-    # resize_images_in_folder("./data/real_nonclean_positive", "./data/real_nonclean_negative_resized")
+    # resize_images_in_folder("./data/Yilun_Wang_cutouts", "./data/Yilun_Wang_cutouts_resized")
     # Augment the data
-    # data_augmentation('./data/pre-split_data_SR/non-cluster', './data/pre-split_data_SR/aug_non-cluster')
-    # data_augmentation('./data/real_all_pre-split_dataset/non-cluster', './data/real_all_pre-split_dataset/aug_non-cluster')
+    # data_augmentation('./data/pre-split_128/cluster', './data/pre-split_128/cluster_aug', 6)
+    # data_augmentation('./data/pre-split_128/non-cluster', './data/pre-split_128/non-cluster_aug', 20)
     #print('Augmented Data')
     # Split the data
-    split_data('./data/pre-split_data_SR', './data/dataset')
-    # print('Split Data')
+    split_data('./data/pre-split_128', './data/dataset_128')
+    print('Split Data')
     # fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 128)
