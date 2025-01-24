@@ -7,6 +7,7 @@ import config as conf
 import os
 import json
 import shutil
+import re
 
 def visualize_feature_maps(model, image_path):
     """ Checks the feature map when inputting one image (must be 64x64 and grayscale)
@@ -246,6 +247,76 @@ def classify_and_organize_images(model, source_directory, output_directory):
             # Copy the image to the target directory
             shutil.copy(file_path, target_dir)
 
+def plot_predictions(model, test_directory):
+    """Makes predictions on the test dataset and plots RA and DEC coordinates.
+
+    Args:
+        model: The trained model to make predictions with.
+        test_directory: Path to the directory containing test images.
+    """
+    # Lists to store RA and DEC values for plotting
+    ra_correct = []
+    dec_correct = []
+    ra_incorrect = []
+    dec_incorrect = []
+
+    # Function to extract RA and DEC from filename
+    def extract_ra_dec(filename):
+        match = re.search(r'_(\d+\.\d+)_(\d+\.\d+)\.png$', filename)
+        if match:
+            ra = float(match.group(1))
+            dec = float(match.group(2))
+            return ra, dec
+        return None, None
+
+    # Iterate over each subdirectory in the test directory
+    for class_folder in os.listdir(test_directory):
+        class_folder_path = os.path.join(test_directory, class_folder)
+
+        # Check if it is a directory
+        if os.path.isdir(class_folder_path):
+            # Iterate over each file in the class folder
+            for filename in os.listdir(class_folder_path):
+                # Construct full file path
+                file_path = os.path.join(class_folder_path, filename)
+
+                # Check if the file is an image
+                if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+                    # Load and preprocess the image
+                    img_array = load_and_preprocess_image(file_path, target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE))
+
+                    # Make predictions
+                    predictions = model.predict(img_array)
+                    predicted_class = np.argmax(predictions, axis=1)[0]  # Get predicted class index
+
+                    # Extract RA and DEC from the filename
+                    ra, dec = extract_ra_dec(filename)
+
+                    # Check if the prediction is correct
+                    actual_class = 0 if class_folder == 'cluster' else 1
+                    if predicted_class == actual_class:
+                        ra_correct.append(ra)
+                        dec_correct.append(dec)
+                    else:
+                        ra_incorrect.append(ra)
+                        dec_incorrect.append(dec)
+
+    # Create a scatter plot
+    plt.figure(figsize=(10, 6))
+
+    # Plot correct and incorrect points with different colors
+    plt.scatter(ra_correct, dec_correct, color='green', label='Correct', alpha=0.6)
+    plt.scatter(ra_incorrect, dec_incorrect, color='red', label='Incorrect', alpha=0.6)
+
+    # Add labels and title
+    plt.xlabel('RA (degrees)')
+    plt.ylabel('DEC (degrees)')
+    plt.title('RA and DEC Coordinates by Prediction Accuracy')
+    plt.legend()
+    plt.grid(True)
+
+    # Show the plot
+    plt.show()
 
 if __name__ == "__main__":
     # Load the trained model
@@ -257,11 +328,17 @@ if __name__ == "__main__":
     # Directory to save classified images
     output_directory = "./data/predictions_128SRNC"
 
+    # Directory containing test images
+    test_directory = "./data/dataset_128/test"
+
     # Test the models accuracy
     # evaluate_model(model, "./data/dataset_128/test")
 
+    # Plot predictions
+    plot_predictions(model, test_directory)
+
     # Classify and organize images
-    classify_and_organize_images(model, source_directory, output_directory)
+    # classify_and_organize_images(model, source_directory, output_directory)
     # # Make predictions on all images in the test directory
     # predictions = predict_images_in_directory(model, test_directory)
 
