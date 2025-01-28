@@ -1,6 +1,7 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 import tensorflow as tf
+from sklearn.metrics import precision_recall_curve, precision_score, recall_score
 import numpy as np
 import matplotlib.pyplot as plt
 import config as conf
@@ -266,7 +267,9 @@ def plot_predictions(model, test_directory):
         if match:
             ra = float(match.group(1))
             dec = float(match.group(2))
-            return ra, dec
+            # One of the RAs is far out, added to
+            if ra < 40:
+                return ra, dec
         return None, None
 
     # Iterate over each subdirectory in the test directory
@@ -318,6 +321,62 @@ def plot_predictions(model, test_directory):
     # Show the plot
     plt.show()
 
+def calculate_metrics(y_true, y_pred_probs, thresholds):
+    precisions = []
+    recalls = []
+    for threshold in thresholds:
+        y_pred = (y_pred_probs >= threshold).astype(int)
+        precision = precision_score(y_true, y_pred)
+        recall = recall_score(y_true, y_pred)
+        precisions.append(precision)
+        recalls.append(recall)
+    return precisions, recalls
+
+def plot_precision_recall_curve(y_true, y_pred_probs):
+    precision, recall, thresholds = precision_recall_curve(y_true, y_pred_probs)
+    plt.figure(figsize=(10, 6))
+    plt.plot(recall, precision, marker='.')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision-Recall Curve')
+    plt.grid(True)
+    plt.show()
+
+def evaluate_precision_recall(model, test_directory):
+    """Evaluates the model on the test dataset and plots the precision-recall curve.
+
+    Args:
+        model: The trained model to evaluate.
+        test_directory: Path to the directory containing test images.
+    """
+    # Load test data
+    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_data = test_datagen.flow_from_directory(
+        test_directory,
+        target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
+        color_mode='grayscale',
+        batch_size=32,
+        class_mode='categorical',
+        shuffle=False
+    )
+
+    # Get true labels and predicted probabilities
+    y_true = test_data.classes
+    y_pred_probs = model.predict(test_data)[:, 1]  # Get probabilities for the positive class
+
+    # Define thresholds to experiment with
+    thresholds = np.arange(0.0, 1.1, 0.1)
+
+    # Calculate precision and recall for different thresholds
+    precisions, recalls = calculate_metrics(y_true, y_pred_probs, thresholds)
+
+    # Plot precision-recall curve
+    plot_precision_recall_curve(y_true, y_pred_probs)
+
+    # Print precision and recall for different thresholds
+    for threshold, precision, recall in zip(thresholds, precisions, recalls):
+        print(f"Threshold: {threshold:.1f}, Precision: {precision:.2f}, Recall: {recall:.2f}")
+
 if __name__ == "__main__":
     # Load the trained model
     model = tf.keras.models.load_model("./models/128SRNC.h5")
@@ -335,7 +394,10 @@ if __name__ == "__main__":
     # evaluate_model(model, "./data/dataset_128/test")
 
     # Plot predictions
-    plot_predictions(model, test_directory)
+    #plot_predictions(model, test_directory)
+
+    # Measure precision recall curve
+    evaluate_precision_recall(model, test_directory)
 
     # Classify and organize images
     # classify_and_organize_images(model, source_directory, output_directory)
