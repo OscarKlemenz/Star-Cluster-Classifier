@@ -377,27 +377,62 @@ def evaluate_precision_recall(model, test_directory):
     for threshold, precision, recall in zip(thresholds, precisions, recalls):
         print(f"Threshold: {threshold:.1f}, Precision: {precision:.2f}, Recall: {recall:.2f}")
 
+def classify_and_organize_by_accuracy(model, source_directory, output_directory):
+    """Classifies images in the source directory and organizes them into 'correct' and 'incorrect' folders.
+
+    Args:
+        model: The trained model to make predictions with.
+        source_directory: Path to the directory containing images to classify.
+        output_directory: Path to the directory where classified images will be saved.
+    """
+    # Create output directories if they don't exist
+    correct_dir = os.path.join(output_directory, 'correct')
+    incorrect_dir = os.path.join(output_directory, 'incorrect')
+    os.makedirs(correct_dir, exist_ok=True)
+    os.makedirs(incorrect_dir, exist_ok=True)
+
+    # Iterate over each file in the source directory
+    for filename in os.listdir(source_directory):
+        file_path = os.path.join(source_directory, filename)
+
+        # Check if the file is an image
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+            # Load and preprocess the image
+            img_array = load_and_preprocess_image(file_path, target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE))
+
+            # Make predictions
+            predictions = model.predict(img_array)
+            predicted_class = np.argmax(predictions, axis=1)[0]  # Get predicted class index
+
+            # Since all images are of type "cluster", the actual class is 0
+            actual_class = 1
+
+            # Determine the target directory based on the prediction accuracy
+            target_dir = correct_dir if predicted_class == actual_class else incorrect_dir
+
+            # Copy the image to the target directory
+            shutil.copy(file_path, os.path.join(target_dir, filename))
+
+    print("Images have been classified and organized into 'correct' and 'incorrect' folders.")
+
 if __name__ == "__main__":
     # Load the trained model
     model = tf.keras.models.load_model("./models/128SRNC.h5")
 
     # Directory containing images to classify
-    source_directory = "./data/Yilun_Wang_Cutouts"  # Replace with your source images directory
+    source_directory = "./data/dataset_128/test/non-cluster"  # Replace with your source images directory
 
     # Directory to save classified images
-    output_directory = "./data/predictions_128SRNC"
+    output_directory = "./data/correct_incorrect_G_128SRNC"
 
-    # Directory containing test images
-    test_directory = "./data/dataset_128/test"
+    # Classify and organize images by accuracy
+    classify_and_organize_by_accuracy(model, source_directory, output_directory)
 
     # Test the models accuracy
     # evaluate_model(model, "./data/dataset_128/test")
 
     # Plot predictions
-    #plot_predictions(model, test_directory)
-
-    # Measure precision recall curve
-    evaluate_precision_recall(model, test_directory)
+    # plot_predictions(model, test_directory)
 
     # Classify and organize images
     # classify_and_organize_images(model, source_directory, output_directory)
