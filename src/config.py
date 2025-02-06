@@ -26,8 +26,8 @@ TEST_RATIO=0.15
 VAL_RATIO=0.15
 
 # Dataset location
-TRAIN_DIR = './data/dataset/train'
-VALIDATION_DIR = './data/dataset/validate'
+TRAIN_DIR = './data/dataset_128SRYC/train'
+VALIDATION_DIR = './data/dataset_128SRYC/validate'
 
 # Training hyperparameters
 LEARNING_RATE = 0.0001

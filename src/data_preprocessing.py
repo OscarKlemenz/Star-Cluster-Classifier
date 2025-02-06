@@ -314,10 +314,10 @@ if __name__ == "__main__":
     # resize_images_in_folder("./data/real_nonclean_negative", "./data/real_nonclean_positive_resized")
     # resize_images_in_folder("./data/Yilun_Wang_cutouts", "./data/Yilun_Wang_cutouts_resized")
     # Augment the data
-    # data_augmentation('./data/pre-split_128/cluster', './data/pre-split_128/cluster_aug', 6)
-    # data_augmentation('./data/pre-split_128/non-cluster', './data/pre-split_128/non-cluster_aug', 20)
+    # data_augmentation('./data/dataset_128SRYC/cluster', './data/dataset_128SRYC/cluster_aug', 10)
+    # data_augmentation('./data/dataset_128SRYC/non-cluster', './data/dataset_128SRYC/non-cluster_aug', 15)
     #print('Augmented Data')
     # Split the data
-    split_data('./data/pre-split_128', './data/dataset_128')
+    split_data('./data/dataset_128SRYC', './data/dataset_128SRYC_split')
     print('Split Data')
     # fits_to_png('./data/synthetic_clusters/cluster_0032_B.fits', './data/test_images/cluster_0032_B_diss.png', 128)

@@ -1,0 +1,32 @@
+Architectures
+
+FOR INITIAL TESTS, RNC, RSNC, 128SRNC, 128SRYC
+    
+    # Model architecture
+    layer_list = [
+        layers.Conv2D(32, (3, 3), activation='relu'),  # Conv Layer 1
+        layers.MaxPooling2D((2, 2)),  # Max Pooling 1
+        layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 2
+        layers.MaxPooling2D((2, 2)),  # Max Pooling 2
+        layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 3
+        layers.Flatten(),
+        layers.Dense(64, activation='relu')
+    ]
+
+BATCH SIZE : 32
+
+BAD WANG MODEL
+
+    layer_list = [
+        layers.Conv2D(64, (5, 5), activation='relu'),  # Conv Layer 1
+        layers.MaxPooling2D((2, 2)),  # Max Pooling 1
+        layers.Conv2D(64, (5, 5), activation='relu'),  # Conv Layer 2
+        layers.MaxPooling2D((2, 2)),  # Max Pooling 2
+        layers.Conv2D(128, (5, 5), activation='relu'),  # Conv Layer 3
+        layers.MaxPooling2D((2, 2)),  # Max Pooling 3
+        layers.Flatten(),
+        layers.Dense(1024, activation='relu'),  # Fully Connected Layer 1
+        layers.Dense(1024, activation='relu')  # Fully Connected Layer 2
+    ]
+
+BATCH SIZE : 50
