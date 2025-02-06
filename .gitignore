@@ -16,3 +16,5 @@ __pycache__/
 data/*
 finalised_cutouts
 cutouts
+
+models/128SRYC_BADWANGARCH.h5

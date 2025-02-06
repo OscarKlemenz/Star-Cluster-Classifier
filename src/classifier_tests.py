@@ -417,7 +417,7 @@ def classify_and_organize_by_accuracy(model, source_directory, output_directory)
 
 if __name__ == "__main__":
     # Load the trained model
-    model = tf.keras.models.load_model("./models/128SRYC.h5")
+    model = tf.keras.models.load_model("./models/128SRYC_BADWANGARCH.h5")
 
     # Directory containing images to classify
     source_directory = "./data/Yilun_Wang_Cutouts"  # Replace with your source images directory
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     output_directory = "./data/Yilun_Wang_Cutouts_Classified"
 
     # Predict a single imafge
-    print(predict_image(model, "./data/predictions_SRYC/non-cluster/cutout_m233_g_ccd_32_9.470733_39.909638.png"))
+    # print(predict_image(model, "./data/predictions_SRYC/non-cluster/cutout_m233_g_ccd_32_9.470733_39.909638.png"))
 
     # Classify and organize images by accuracy
     # classify_and_organize_by_accuracy(model, source_directory, output_directory)
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     # evaluate_model(model, "./data/dataset_128SRYC/test")
 
     # Plot precision recall
-    # evaluate_precision_recall(model, "./data/dataset_128SRYC/test")
+    evaluate_precision_recall(model, "./data/dataset_128SRYC/test")
 
     # Plot predictions
     # plot_predictions(model, test_directory)
