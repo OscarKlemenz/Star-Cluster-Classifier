@@ -30,3 +30,18 @@ BAD WANG MODEL
     ]
 
 BATCH SIZE : 50
+
+accuracy: 0.9755 - loss: 0.0627 - val_accuracy: 0.9747 - val_loss: 0.0675
+
+Class: cluster
+Precision: 0.9728943059850828
+Recall: 0.9766252739225713
+F1-score: 0.9747562198122666
+
+Class: non-cluster
+Precision: 0.9772969137992196
+Recall: 0.9736702597632091
+F1-score: 0.9754802159865451
+
+Consistent predictions?
+
