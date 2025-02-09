@@ -420,10 +420,10 @@ if __name__ == "__main__":
     model = tf.keras.models.load_model("./models/128SRYC_BADWANGARCH.h5")
 
     # Directory containing images to classify
-    source_directory = "./data/Yilun_Wang_Cutouts"  # Replace with your source images directory
+    source_directory = "./data/rootness_cutouts"  # Replace with your source images directory
 
     # Directory to save classified images
-    output_directory = "./data/Yilun_Wang_Cutouts_Classified"
+    output_directory = "./data/128SRYC_BADWANGARCH_rootness_predictions"
 
     # Predict a single imafge
     # print(predict_image(model, "./data/predictions_SRYC/non-cluster/cutout_m233_g_ccd_32_9.470733_39.909638.png"))
@@ -432,13 +432,13 @@ if __name__ == "__main__":
     # classify_and_organize_by_accuracy(model, source_directory, output_directory)
 
     # Classify and organise images
-    # classify_and_organize_images(model, source_directory, output_directory)
+    classify_and_organize_images(model, source_directory, output_directory)
 
     # Test the models accuracy
     # evaluate_model(model, "./data/dataset_128SRYC/test")
 
     # Plot precision recall
-    evaluate_precision_recall(model, "./data/dataset_128SRYC/test")
+    # evaluate_precision_recall(model, "./data/dataset_128SRYC/test")
 
     # Plot predictions
     # plot_predictions(model, test_directory)
