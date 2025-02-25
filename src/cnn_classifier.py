@@ -20,7 +20,7 @@ def load_images():
         conf.TRAIN_DIR,
         target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
         color_mode='grayscale',
-        batch_size=50,
+        batch_size=32,
         class_mode='categorical'
     )
 
@@ -28,7 +28,7 @@ def load_images():
         conf.VALIDATION_DIR,
         target_size=(conf.IMAGE_SIZE, conf.IMAGE_SIZE),
         color_mode='grayscale', 
-        batch_size=50,
+        batch_size=32,
         class_mode='categorical'
     )
 
@@ -49,15 +49,13 @@ def create_model():
     
     # Model architecture
     layer_list = [
-        layers.Conv2D(64, (5, 5), activation='relu'),  # Conv Layer 1
+        layers.Conv2D(32, (3, 3), activation='relu'),  # Conv Layer 1
         layers.MaxPooling2D((2, 2)),  # Max Pooling 1
-        layers.Conv2D(64, (5, 5), activation='relu'),  # Conv Layer 2
+        layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 2
         layers.MaxPooling2D((2, 2)),  # Max Pooling 2
-        layers.Conv2D(128, (5, 5), activation='relu'),  # Conv Layer 3
-        layers.MaxPooling2D((2, 2)),  # Max Pooling 3
+        layers.Conv2D(64, (3, 3), activation='relu'),  # Conv Layer 3
         layers.Flatten(),
-        layers.Dense(1024, activation='relu'),  # Fully Connected Layer 1
-        layers.Dense(1024, activation='relu')  # Fully Connected Layer 2
+        layers.Dense(64, activation='relu')
     ]
     
     # Add layers from the list
@@ -85,4 +83,4 @@ if __name__ == "__main__":
         validation_data=validation_data
     )
 
-    model.save("./models/128SRYC_BADWANGARCH.h5")
+    model.save("./models/128SRYC_NNS.h5")

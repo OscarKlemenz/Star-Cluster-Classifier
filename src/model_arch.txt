@@ -1,6 +1,6 @@
 Architectures
 
-FOR INITIAL TESTS, RNC, RSNC, 128SRNC, 128SRYC
+FOR INITIAL TESTS, RNC, RSNC, 128SRNC, 128SRYC, 128SRYC_NNS
     
     # Model architecture
     layer_list = [
@@ -15,7 +15,7 @@ FOR INITIAL TESTS, RNC, RSNC, 128SRNC, 128SRYC
 
 BATCH SIZE : 32
 
-BAD WANG MODEL
+BAD WANG MODEL, 128SRYC
 
     layer_list = [
         layers.Conv2D(64, (5, 5), activation='relu'),  # Conv Layer 1
