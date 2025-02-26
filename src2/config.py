@@ -25,11 +25,21 @@ TRAIN_RATIO=0.7
 TEST_RATIO=0.15
 VAL_RATIO=0.15
 
+"""
+====================
+CNN Classifier Config
+====================
+"""
+
 # Dataset location
-TRAIN_DIR = './data/dataset_128SRYC_NNS/train'
-VALIDATION_DIR = './data/dataset_128SRYC_NNS/validate'
+TRAIN_DIR = '../data/dataset_128SRYC_NNS/train'
+VALIDATION_DIR = '../data/dataset_128SRYC_NNS/validate'
+
+# Model save location
+MODEL_SAVE_PATH = '../models/128SRYC_NNS.h5'
 
 # Training hyperparameters
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001
+DROPOUT_BOOL = False
 DROPOUT = 0.5
 EPOCHS = 5

@@ -1,5 +1,3 @@
-import numpy as np
-import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import config as conf
