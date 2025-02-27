@@ -417,13 +417,16 @@ def classify_and_organize_by_accuracy(model, source_directory, output_directory)
 
 if __name__ == "__main__":
     # Load the trained model
-    model = tf.keras.models.load_model("./models/128SRYC_NNS.h5")
+    model = tf.keras.models.load_model("./models/128SRYC.h5")
 
     # Directory containing images to classify
     source_directory = "./data/rootness_cutouts"  # Replace with your source images directory
 
     # Directory to save classified images
     output_directory = "./data/128SRYC_NNS_rootness_predictions"
+
+    # Path to the image file
+    image_path = "./data/rootness_cutouts/cutout_m105_g_ccd_6_10.521051_34.696718.png"
 
     # Predict a single imafge
     # print(predict_image(model, "./data/predictions_SRYC/non-cluster/cutout_m233_g_ccd_32_9.470733_39.909638.png"))
@@ -432,7 +435,7 @@ if __name__ == "__main__":
     # classify_and_organize_by_accuracy(model, source_directory, output_directory)
 
     # Classify and organise images
-    classify_and_organize_images(model, source_directory, output_directory)
+    # classify_and_organize_images(model, source_directory, output_directory)
 
     # Test the models accuracy
     # evaluate_model(model, "./data/dataset_128SRYC_NNS/test")
