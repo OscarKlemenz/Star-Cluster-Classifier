@@ -1,19 +1,27 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.preprocessing import image
+import keras
+
+def load_image(image_path):
+    img = image.load_img(image_path, target_size=(128, 128), color_mode='grayscale')
+    img_array = image.img_to_array(img)
+    img_array = img_array / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+    return img_array
 
 # Load your TensorFlow model
-model = keras.models.load_model('128SRNC.h5')  # Replace with your model path
+model = keras.models.load_model('128SRNC.h5')
 
 # Load and preprocess your input image
-image_path = 'cutout_m233_g_ccd_1_10.0963208_40.5130972.png'  # Replace with your image path
+image_path = 'cutout_m233_g_ccd_1_10.0963208_40.5130972.png'
 preprocessed_input = load_image(image_path)
 
 # Make predictions
 predictions = model.predict(preprocessed_input)
 predicted_class_index = np.argmax(predictions[0])
 print('Predicted class index:', predicted_class_index)
-
 
 def integrated_gradients(model, baseline, input_image, target_class_idx, num_steps=50):
     """

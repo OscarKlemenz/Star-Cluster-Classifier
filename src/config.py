@@ -30,6 +30,7 @@ TRAIN_DIR = './data/dataset_128SRYC_NNS/train'
 VALIDATION_DIR = './data/dataset_128SRYC_NNS/validate'
 
 # Training hyperparameters
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001
+DROPOUT_BOOL = False
 DROPOUT = 0.5
 EPOCHS = 5
