@@ -55,3 +55,21 @@ pip install -r requirements.txt
 
 Exiting the environment:
 `deactivate`
+
+## Project Structure
+
+### Folders and Code Files
+
+- **data**: This folder holds the different catalogues containing astronomical phenomena. These catalogues are cross-referenced with their corresponding FITS files in `locating_real_images.ipynb`.
+
+- **models**: This folder contains the trained models. Due to their large sizes, models and images are found on OneDrive.
+
+- **src/classifier_tests.ipynb**: This notebook contains all the tests run on the CNN to test its functionality.
+
+- **src/cnn_classifier.ipynb**: This notebook is used for training CNNs.
+
+- **src/data_preprocessing.ipynb**: This notebook contains the preprocessing pipeline for processing all images that the CNN is trained on.
+
+- **src/visualisations.ipynb**: This notebook is used for any graphing needed for the dissertation.
+
+- **src/heatmap.ipynb**: This notebook is used to create integrated gradient images of the CNN's predictions to understand why it has made certain decisions.
