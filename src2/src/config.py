@@ -4,8 +4,6 @@ Centralised location for model, training and dataset parameters
 
 # Data configurations
 DATA_DIR = './data/'
-IMAGE_SIZE = 128
-IMAGE_CHANNELS = 1
 
 # CSV Processing
 # The Lowest M_V value where the image definitely looks like stars
@@ -32,14 +30,17 @@ CNN Classifier Config
 """
 
 # Dataset location
-TRAIN_DIR = '../data/dataset_128SRYC_NNS/train'
-VALIDATION_DIR = '../data/dataset_128SRYC_NNS/validate'
+TRAIN_DIR = '../data/images/128_synth_real_split/train'
+VALIDATION_DIR = '../data/images/128_synth_real_split/validate'
 
 # Model save location
-MODEL_SAVE_PATH = '../models/128SRYC_NNS.h5'
+MODEL_SAVE_PATH = '../models/128SR.h5'
 
 # Training hyperparameters
 LEARNING_RATE = 0.001
 DROPOUT_BOOL = False
 DROPOUT = 0.5
 EPOCHS = 5
+BATCH_SIZE = 32
+IMAGE_SIZE = 128
+IMAGE_CHANNELS = 1
