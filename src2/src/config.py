@@ -34,13 +34,13 @@ TRAIN_DIR = '../data/images/128_synth_real_split/train'
 VALIDATION_DIR = '../data/images/128_synth_real_split/validate'
 
 # Model save location
-MODEL_SAVE_PATH = '../models/128SR.h5'
+MODEL_SAVE_PATH = '../models/128SR_WANG.h5'
 
 # Training hyperparameters
 LEARNING_RATE = 0.001
 DROPOUT_BOOL = False
 DROPOUT = 0.5
 EPOCHS = 5
-BATCH_SIZE = 32
+BATCH_SIZE = 50
 IMAGE_SIZE = 128
 IMAGE_CHANNELS = 1

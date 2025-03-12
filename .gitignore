@@ -20,4 +20,5 @@ cutouts
 models/128SRYC_BADWANGARCH.h5
 src2/data
 src2\data
+src2/models
 data/
