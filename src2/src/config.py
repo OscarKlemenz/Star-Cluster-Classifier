@@ -30,11 +30,11 @@ CNN Classifier Config
 """
 
 # Dataset location
-TRAIN_DIR = '../data/images/128_synth_true_split/train'
-VALIDATION_DIR = '../data/images/128_synth_true_split/validate'
+TRAIN_DIR = '../data/images/FINAL/SR/train'
+VALIDATION_DIR = '../data/images/FINAL/SR/validate'
 
 # Model save location
-MODEL_SAVE_PATH = '../models/128ST.h5'
+MODEL_SAVE_PATH = '../models/64SR_septest.h5'
 
 # Training hyperparameters
 LEARNING_RATE = 0.001
@@ -42,5 +42,5 @@ DROPOUT_BOOL = False
 DROPOUT = 0.5
 EPOCHS = 5
 BATCH_SIZE = 32
-IMAGE_SIZE = 128
+IMAGE_SIZE = 64
 IMAGE_CHANNELS = 1

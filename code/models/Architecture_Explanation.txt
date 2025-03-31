@@ -1,0 +1,12 @@
+Architectue Explanation
+
+Models can be found on OneDrive
+
+This text document describes the different models in this folder.
+
+128SRNC.h5 - Trained on 128x128 Pixels, Synthetic, Real, Not cleaned data
+128SRYC.h5 - Trained on 128x128 Pixels, Synthetic, Real + Additional Galaxies from Yilun Wang, Cleaned Data
+128SRYC_NNS.h5 - Trained on 128x128 Pixels, Synthetic, Real + Additional Galaxies from Yilun Wang, Cleaned Data, No Negative Synthetic Data used
+64RNC.h5 - Trained on 64x64 Pixels, Only Real Data, Not cleaned
+64SRNC.h5 - Trained on 64x64 Pixels, Only Real Data, Not cleaned
+TEST.h5 - Inital experimentation to check CNN is able to discern between clusters and non-clusters synthetic data
